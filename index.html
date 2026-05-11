@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Latein">
+<meta name="theme-color" content="#8b5e20">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Latein Verbformen Trainer</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f4f1eb; color: #333; padding: 20px; min-height: 100vh; }
+h1 { text-align: center; color: #4a2c0a; font-size: 24px; margin-bottom: 20px; letter-spacing: 1px; }
+
+/* ── Controls ── */
+.controls {
+  background: white; border-radius: 10px; padding: 14px 18px;
+  margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;
+  align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+}
+select {
+  padding: 8px 12px; border-radius: 6px; border: 1.5px solid #c8a96e;
+  font-size: 15px; cursor: pointer; background: white; color: #333;
+}
+select:focus { outline: none; border-color: #8b5e20; }
+.mode-group { display: flex; gap: 5px; flex-wrap: wrap; }
+.mode-btn {
+  padding: 7px 13px; border: 2px solid #8b5e20; background: white;
+  color: #8b5e20; border-radius: 6px; cursor: pointer; font-size: 13px;
+  font-weight: 700; transition: all 0.18s; white-space: nowrap;
+}
+.mode-btn.active { background: #8b5e20; color: white; }
+.mode-btn:hover:not(.active) { background: #f5e8d0; }
+.sep { width: 1px; background: #e0d0b8; align-self: stretch; margin: 0 2px; }
+.btn {
+  padding: 7px 14px; border-radius: 6px; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 700; transition: all 0.18s; white-space: nowrap;
+}
+.btn-check  { background: #2e7d32; color: white; }
+.btn-check:hover  { background: #1b5e20; }
+.btn-reveal { background: #1565c0; color: white; }
+.btn-reveal:hover { background: #0d47a1; }
+.btn-reset  { background: #666; color: white; }
+.btn-reset:hover  { background: #444; }
+.btn-panel  { background: white; color: #6b3a10; border: 2px solid #c8a96e; }
+.btn-panel:hover  { background: #f5e8d0; }
+.btn-panel.on { background: #f5e8d0; border-color: #8b5e20; color: #4a2c0a; }
+.btn-hide { display: none !important; }
+
+/* ── Test-Sperre ── */
+.lock-bar {
+  display: none; background: #fff3e0; border: 2px solid #e65100;
+  border-radius: 10px; padding: 10px 18px; margin-bottom: 10px;
+  font-size: 13px; font-weight: 600; color: #bf360c;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.lock-bar.active { display: flex; }
+.btn-abbruch {
+  padding: 5px 14px; border: 2px solid #bf360c; background: white;
+  color: #bf360c; border-radius: 6px; cursor: pointer; font-size: 12px;
+  font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: background 0.15s;
+}
+.btn-abbruch:hover { background: #fbe9e7; }
+.ctrl-locked { opacity: 0.38 !important; cursor: not-allowed !important; pointer-events: none !important; }
+
+/* ── Panels ── */
+.panel {
+  background: white; border-radius: 10px; padding: 16px 18px;
+  margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+}
+.panel.hidden { display: none; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #f0e0c0; }
+.panel-title { font-size: 14px; font-weight: 800; color: #6b3a10; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ── Endungen-Tabelle ── */
+.end-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.end-table th { background: #faf3e8; color: #8b5e20; padding: 6px 8px; text-align: center; border: 1px solid #ede5d8; font-size: 12px; white-space: nowrap; }
+.end-table td { padding: 5px 8px; border: 1px solid #ede5d8; white-space: nowrap; }
+.end-table td:first-child { background: #faf6f0; font-weight: 700; color: #6b3a10; font-size: 12px; }
+.end-table td.end { font-family: 'Georgia', serif; font-style: italic; text-align: center; color: #1a1a1a; }
+.end-table tr.group-head td { background: #f0e8d8; font-weight: 800; font-style: normal; color: #4a2c0a; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+.end-table tr:hover td:not(:first-child) { background: #fdf8f0; }
+
+/* ── Eselsbrücken ── */
+.esel-mode-group { display: flex; gap: 5px; }
+.esel-btn { padding: 5px 12px; border: 2px solid #8b5e20; background: white; color: #8b5e20; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.18s; }
+.esel-btn.active { background: #8b5e20; color: white; }
+.esel-btn:hover:not(.active) { background: #f5e8d0; }
+
+.esel-gruppe-label { font-size: 11px; font-weight: 800; color: #8b5e20; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #f0e0c0; }
+.esel-gruppe-label:first-child { margin-top: 0; }
+
+.esel-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
+
+.esel-card { border: 1.5px solid #e8ddd0; border-radius: 8px; padding: 12px 14px; background: #fffef9; }
+.esel-card-title { font-size: 13px; font-weight: 800; color: #4a2c0a; margin-bottom: 8px; }
+.esel-bruecke { background: #fdf5e4; border-left: 3px solid #c8a96e; padding: 7px 10px; border-radius: 0 4px 4px 0; margin-bottom: 6px; font-size: 13px; font-style: italic; color: #555; line-height: 1.4; }
+.esel-tip { font-size: 11px; color: #999; margin-bottom: 10px; }
+.esel-tip strong { color: #8b5e20; }
+
+.esel-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+.esel-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+.esel-person { width: 42px; font-size: 11px; color: #8b5e20; font-weight: 700; flex-shrink: 0; }
+.esel-end-display { font-family: 'Georgia', serif; font-style: italic; font-size: 14px; color: #1a1a1a; }
+.esel-input { flex: 1; min-width: 0; padding: 3px 7px; border: 1.5px solid #d0c0a0; border-radius: 4px; font-size: 13px; font-family: 'Georgia', serif; background: #fffef9; }
+.esel-input:focus { outline: none; border-color: #8b5e20; background: white; }
+.esel-input.correct { background: #e8f5e9 !important; border-color: #43a047 !important; }
+.esel-input.wrong   { background: #ffebee !important; border-color: #e53935 !important; }
+.esel-input.revealed{ background: #e3f2fd !important; border-color: #1e88e5 !important; }
+.esel-divider { grid-column: 1 / -1; height: 1px; background: #f0e8d8; margin: 4px 0; }
+
+.esel-actions { display: none; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.esel-score { display: none; margin-top: 10px; padding: 10px 16px; background: #f9f6f0; border-radius: 8px; font-size: 14px; font-weight: 700; border: 1px solid #e8ddd0; }
+
+/* ── Statistik ── */
+.stats-summary { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.stat-box { text-align: center; padding: 8px 16px; border-radius: 8px; min-width: 72px; }
+.stat-box .num { font-size: 22px; font-weight: 800; }
+.stat-box .lbl { font-size: 11px; color: #888; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-box.total   { background: #f5f5f5; } .stat-box.total   .num { color: #444; }
+.stat-box.richtig { background: #e8f5e9; } .stat-box.richtig .num { color: #2e7d32; }
+.stat-box.fehler  { background: #ffebee; } .stat-box.fehler  .num { color: #c62828; }
+.stat-box.pct     { background: #e8eaf6; } .stat-box.pct     .num { color: #283593; }
+.hist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.hist-table th { background: #faf3e8; color: #8b5e20; padding: 5px 10px; text-align: left; border-bottom: 2px solid #f0e0c0; font-size: 12px; }
+.hist-table td { padding: 5px 10px; border-bottom: 1px solid #f0ede8; }
+.hist-table tr:last-child td { border-bottom: none; }
+.hist-table tr:hover td { background: #fdf8f0; }
+.hist-richtig { color: #2e7d32; font-weight: 700; }
+.hist-fehler  { color: #c62828; font-weight: 700; }
+.btn-stats-reset { margin-top: 10px; padding: 5px 12px; font-size: 12px; border: 1px solid #ccc; border-radius: 5px; background: white; cursor: pointer; color: #666; }
+.btn-stats-reset:hover { background: #f5f5f5; }
+.no-history { color: #aaa; font-size: 13px; padding: 6px 0; }
+
+/* ── Score-Bar ── */
+.score-bar { display: none; background: white; border-radius: 10px; padding: 11px 20px; margin-bottom: 10px; text-align: center; font-size: 15px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.09); }
+
+/* ── Verb-Header ── */
+.verb-header { background: linear-gradient(135deg, #6b3a10 0%, #a0621e 100%); color: white; border-radius: 10px; padding: 14px 22px; margin-bottom: 14px; margin-top: 10px; text-align: center; }
+.verb-header h2 { font-size: 21px; margin-bottom: 4px; }
+.verb-header p  { font-size: 13px; opacity: 0.85; }
+
+/* ── Konjugations-Tabellen ── */
+.section { background: white; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.section-title { font-size: 12px; font-weight: 800; color: #6b3a10; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 9px; padding-bottom: 6px; border-bottom: 2px solid #f0e0c0; }
+table.konj { width: 100%; border-collapse: collapse; }
+table.konj td { padding: 3px 5px; border: 1px solid #ede5d8; vertical-align: middle; }
+.person-cell { background: #faf6f0; font-weight: 700; color: #8b5e20; width: 52px; text-align: center; font-size: 12px; white-space: nowrap; }
+.lat-cell { width: 28%; }
+.de-cell  { width: 22%; border-right: 3px solid #e8ddd0; }
+.display-lat { font-family: 'Georgia', serif; font-style: italic; font-size: 14px; padding: 5px 7px; color: #1a1a1a; }
+.display-de  { font-size: 13px; padding: 5px 7px; color: #555; }
+input[type=text] { width: 100%; padding: 5px 7px; border: 1.5px solid #d0c0a0; border-radius: 4px; font-size: 13px; font-family: 'Georgia', serif; background: #fffef9; transition: border-color 0.15s; }
+input[type=text]:focus { outline: none; border-color: #8b5e20; background: white; box-shadow: 0 0 0 2px rgba(139,94,32,0.13); }
+input.correct  { background: #e8f5e9 !important; border-color: #43a047 !important; }
+input.wrong    { background: #ffebee !important; border-color: #e53935 !important; }
+input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !important; }
+.empty-hint { text-align: center; color: #aaa; padding: 40px; font-size: 15px; }
+
+/* ── Touch & Tablet ── */
+@media (pointer: coarse) {
+  .mode-btn { padding: 10px 16px; font-size: 15px; min-height: 44px; }
+  .btn       { padding: 10px 16px; font-size: 15px; min-height: 44px; }
+  .esel-btn  { padding: 10px 14px; font-size: 14px; min-height: 44px; }
+  .btn-abbruch    { padding: 10px 16px; min-height: 44px; font-size: 13px; }
+  .btn-stats-reset{ padding: 10px 14px; min-height: 44px; font-size: 13px; }
+  select { font-size: 16px; padding: 10px 14px; min-height: 44px; }
+  input[type=text]{ font-size: 16px !important; padding: 8px 10px; min-height: 40px; }
+  .esel-input     { font-size: 16px !important; padding: 8px 10px; min-height: 40px; }
+  .section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .end-table { min-width: 480px; }
+  .hist-table { min-width: 480px; }
+  #panel-statistik .panel { overflow-x: auto; }
+}
+@media (max-width: 700px) {
+  body { padding: 10px; }
+  h1   { font-size: 18px; }
+  .sep { display: none; }
+  .verb-header h2 { font-size: 17px; }
+  .esel-rows { grid-template-columns: 1fr; }
+  .esel-cards-grid { grid-template-columns: 1fr; }
+  table.konj .de-cell { display: none; }
+}
+@media (min-width: 701px) and (max-width: 1024px) {
+  .sep { display: none; }
+  .controls { gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<h1>Latein · Verbformen Trainer</h1>
+
+<div class="controls">
+  <select id="verbSelect">
+    <option value="">— Verb auswählen —</option>
+    <option value="amare">amare — lieben (1. Konj.)</option>
+    <option value="monere">monere — mahnen (2. Konj.)</option>
+    <option value="regere">regere — lenken (3. Konj.)</option>
+    <option value="audire">audire — hören (4. Konj.)</option>
+    <option value="capere">capere — nehmen (3b. Konj.)</option>
+  </select>
+  <div class="mode-group">
+    <button class="mode-btn active" id="btn-lernen">Lernen</button>
+    <button class="mode-btn" id="btn-lat">Latein üben</button>
+    <button class="mode-btn" id="btn-de">Deutsch üben</button>
+    <button class="mode-btn" id="btn-test">Test</button>
+  </div>
+  <div class="sep"></div>
+  <button class="btn btn-panel" id="btnEndungen">Endungen</button>
+  <button class="btn btn-panel" id="btnEselsbruecken">Eselsbrücken</button>
+  <button class="btn btn-panel" id="btnStatistik">Statistik</button>
+  <div class="sep"></div>
+  <button class="btn btn-check  btn-hide" id="btnCheck">Prüfen ✓</button>
+  <button class="btn btn-reveal btn-hide" id="btnReveal">Aufdecken</button>
+  <button class="btn btn-reset  btn-hide" id="btnReset">Zurücksetzen</button>
+</div>
+
+<!-- ── Endungen-Panel ── -->
+<div class="panel hidden" id="panel-endungen">
+  <div class="panel-header">
+    <div class="panel-title">Personalendungen — Übersicht</div>
+  </div>
+  <table class="end-table">
+    <thead>
+      <tr>
+        <th style="text-align:left; min-width:170px">Tempus / Genus</th>
+        <th>1. Sg.</th><th>2. Sg.</th><th>3. Sg.</th>
+        <th style="border-left:3px solid #ddd">1. Pl.</th><th>2. Pl.</th><th>3. Pl.</th>
+      </tr>
+    </thead>
+    <tbody id="endungenBody"></tbody>
+  </table>
+</div>
+
+<!-- ── Eselsbrücken-Panel ── -->
+<div class="panel hidden" id="panel-eselsbruecken">
+  <div class="panel-header">
+    <div class="panel-title">Eselsbrücken — Endungen merken</div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <div class="esel-mode-group">
+        <button class="esel-btn active" id="esel-btn-lernen">Lernen</button>
+        <button class="esel-btn" id="esel-btn-quiz">Quiz</button>
+      </div>
+    </div>
+  </div>
+  <div id="eselCards"></div>
+  <div class="esel-actions" id="eselActions">
+    <button class="btn btn-check"  id="btnEselCheck">Prüfen ✓</button>
+    <button class="btn btn-reveal" id="btnEselReveal">Aufdecken</button>
+    <button class="btn btn-reset"  id="btnEselReset">Zurücksetzen</button>
+  </div>
+  <div class="esel-score" id="eselScore"></div>
+</div>
+
+<!-- ── Statistik-Panel ── -->
+<div class="panel hidden" id="panel-statistik">
+  <div class="panel-header">
+    <div class="panel-title">Statistik &amp; Verlauf</div>
+    <button class="btn-stats-reset">Zurücksetzen</button>
+  </div>
+  <div class="stats-summary" id="statsSummary"><p class="no-history">Noch keine Übungen durchgeführt.</p></div>
+  <div id="historyTable"></div>
+</div>
+
+<div class="lock-bar" id="lockBar">
+  <span>🔒 Test läuft — bitte erst <strong>Prüfen</strong> klicken, um den Test abzuschließen</span>
+  <button class="btn-abbruch">Test abbrechen ✕</button>
+</div>
+<div class="score-bar" id="scoreBar"></div>
+<div id="content"><p class="empty-hint">Bitte oben ein Verb auswählen.</p></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// VERB-DATENBANK
+// ════════════════════════════════════════════════════════════════
+const VB = {
+  amare: {
+    info: { lat:"amare", ppp:"amatum", de:"lieben", konj:"1. Konjugation", stamm:"ama-" },
+    lat: {
+      praesens:        { a:{ sg:["amo","amas","amat"],               pl:["amamus","amatis","amant"] },
+                         p:{ sg:["amor","amaris","amatur"],           pl:["amamur","amamini","amantur"] } },
+      imperfekt:       { a:{ sg:["amabam","amabas","amabat"],         pl:["amabamus","amabatis","amabant"] },
+                         p:{ sg:["amabar","amabaris","amabatur"],     pl:["amabamur","amabamini","amabantur"] } },
+      futur:           { a:{ sg:["amabo","amabis","amabit"],          pl:["amabimus","amabitis","amabunt"] },
+                         p:{ sg:["amabor","amaberis","amabitur"],     pl:["amabimur","amabimini","amabuntur"] } },
+      perfekt:         { a:{ sg:["amavi","amavisti","amavit"],        pl:["amavimus","amavistis","amaverunt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["amaveram","amaveras","amaverat"],   pl:["amaveramus","amaveratis","amaverant"] }, p:null }
+    },
+    de: {
+      praesens:        { a:{ sg:["ich liebe","du liebst","er/sie liebt"],               pl:["wir lieben","ihr liebt","sie lieben"] },
+                         p:{ sg:["ich werde geliebt","du wirst geliebt","er/sie wird geliebt"], pl:["wir werden geliebt","ihr werdet geliebt","sie werden geliebt"] } },
+      imperfekt:       { a:{ sg:["ich liebte","du liebtest","er/sie liebte"],           pl:["wir liebten","ihr liebtet","sie liebten"] },
+                         p:{ sg:["ich wurde geliebt","du wurdest geliebt","er/sie wurde geliebt"], pl:["wir wurden geliebt","ihr wurdet geliebt","sie wurden geliebt"] } },
+      futur:           { a:{ sg:["ich werde lieben","du wirst lieben","er/sie wird lieben"], pl:["wir werden lieben","ihr werdet lieben","sie werden lieben"] },
+                         p:{ sg:["ich werde geliebt werden","du wirst geliebt werden","er/sie wird geliebt werden"], pl:["wir werden geliebt werden","ihr werdet geliebt werden","sie werden geliebt werden"] } },
+      perfekt:         { a:{ sg:["ich habe geliebt","du hast geliebt","er/sie hat geliebt"], pl:["wir haben geliebt","ihr habt geliebt","sie haben geliebt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ich hatte geliebt","du hattest geliebt","er/sie hatte geliebt"], pl:["wir hatten geliebt","ihr hattet geliebt","sie hatten geliebt"] }, p:null }
+    }
+  },
+  monere: {
+    info: { lat:"monere", ppp:"monitum", de:"mahnen / warnen", konj:"2. Konjugation", stamm:"mone-" },
+    lat: {
+      praesens:        { a:{ sg:["moneo","mones","monet"],            pl:["monemus","monetis","monent"] },
+                         p:{ sg:["moneor","moneris","monetur"],        pl:["monemur","monemini","monentur"] } },
+      imperfekt:       { a:{ sg:["monebam","monebas","monebat"],       pl:["monebamus","monebatis","monebant"] },
+                         p:{ sg:["monebar","monebaris","monebatur"],   pl:["monebamur","monebamini","monebantur"] } },
+      futur:           { a:{ sg:["monebo","monebis","monebit"],        pl:["monebimus","monebitis","monebunt"] },
+                         p:{ sg:["monebor","moneberis","monebitur"],   pl:["monebimur","monebimini","monebuntur"] } },
+      perfekt:         { a:{ sg:["monui","monuisti","monuit"],         pl:["monuimus","monuistis","monuerunt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["monueram","monueras","monuerat"],    pl:["monueramus","monueratis","monuerant"] }, p:null }
+    },
+    de: {
+      praesens:        { a:{ sg:["ich mahne","du mahnst","er/sie mahnt"],   pl:["wir mahnen","ihr mahnt","sie mahnen"] },
+                         p:{ sg:["ich werde gemahnt","du wirst gemahnt","er/sie wird gemahnt"], pl:["wir werden gemahnt","ihr werdet gemahnt","sie werden gemahnt"] } },
+      imperfekt:       { a:{ sg:["ich mahnte","du mahntest","er/sie mahnte"], pl:["wir mahnten","ihr mahntet","sie mahnten"] },
+                         p:{ sg:["ich wurde gemahnt","du wurdest gemahnt","er/sie wurde gemahnt"], pl:["wir wurden gemahnt","ihr wurdet gemahnt","sie wurden gemahnt"] } },
+      futur:           { a:{ sg:["ich werde mahnen","du wirst mahnen","er/sie wird mahnen"], pl:["wir werden mahnen","ihr werdet mahnen","sie werden mahnen"] },
+                         p:{ sg:["ich werde gemahnt werden","du wirst gemahnt werden","er/sie wird gemahnt werden"], pl:["wir werden gemahnt werden","ihr werdet gemahnt werden","sie werden gemahnt werden"] } },
+      perfekt:         { a:{ sg:["ich habe gemahnt","du hast gemahnt","er/sie hat gemahnt"], pl:["wir haben gemahnt","ihr habt gemahnt","sie haben gemahnt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ich hatte gemahnt","du hattest gemahnt","er/sie hatte gemahnt"], pl:["wir hatten gemahnt","ihr hattet gemahnt","sie hatten gemahnt"] }, p:null }
+    }
+  },
+  regere: {
+    info: { lat:"regere", ppp:"rectum", de:"lenken / herrschen", konj:"3. Konjugation (konsonantisch)", stamm:"reg-" },
+    lat: {
+      praesens:        { a:{ sg:["rego","regis","regit"],               pl:["regimus","regitis","regunt"] },
+                         p:{ sg:["regor","regeris","regitur"],           pl:["regimur","regimini","reguntur"] } },
+      imperfekt:       { a:{ sg:["regebam","regebas","regebat"],         pl:["regebamus","regebatis","regebant"] },
+                         p:{ sg:["regebar","regebaris","regebatur"],     pl:["regebamur","regebamini","regebantur"] } },
+      futur:           { a:{ sg:["regam","reges","reget"],               pl:["regemus","regetis","regent"] },
+                         p:{ sg:["regar","regeris","regetur"],           pl:["regemur","regemini","regentur"] } },
+      perfekt:         { a:{ sg:["rexi","rexisti","rexit"],              pl:["reximus","rexistis","rexerunt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["rexeram","rexeras","rexerat"],         pl:["rexeramus","rexeratis","rexerant"] }, p:null }
+    },
+    de: {
+      praesens:        { a:{ sg:["ich lenke","du lenkst","er/sie lenkt"], pl:["wir lenken","ihr lenkt","sie lenken"] },
+                         p:{ sg:["ich werde gelenkt","du wirst gelenkt","er/sie wird gelenkt"], pl:["wir werden gelenkt","ihr werdet gelenkt","sie werden gelenkt"] } },
+      imperfekt:       { a:{ sg:["ich lenkte","du lenktest","er/sie lenkte"], pl:["wir lenkten","ihr lenktet","sie lenkten"] },
+                         p:{ sg:["ich wurde gelenkt","du wurdest gelenkt","er/sie wurde gelenkt"], pl:["wir wurden gelenkt","ihr wurdet gelenkt","sie wurden gelenkt"] } },
+      futur:           { a:{ sg:["ich werde lenken","du wirst lenken","er/sie wird lenken"], pl:["wir werden lenken","ihr werdet lenken","sie werden lenken"] },
+                         p:{ sg:["ich werde gelenkt werden","du wirst gelenkt werden","er/sie wird gelenkt werden"], pl:["wir werden gelenkt werden","ihr werdet gelenkt werden","sie werden gelenkt werden"] } },
+      perfekt:         { a:{ sg:["ich habe gelenkt","du hast gelenkt","er/sie hat gelenkt"], pl:["wir haben gelenkt","ihr habt gelenkt","sie haben gelenkt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ich hatte gelenkt","du hattest gelenkt","er/sie hatte gelenkt"], pl:["wir hatten gelenkt","ihr hattet gelenkt","sie hatten gelenkt"] }, p:null }
+    }
+  },
+  audire: {
+    info: { lat:"audire", ppp:"auditum", de:"hören", konj:"4. Konjugation", stamm:"audi-" },
+    lat: {
+      praesens:        { a:{ sg:["audio","audis","audit"],               pl:["audimus","auditis","audiunt"] },
+                         p:{ sg:["audior","audiris","auditur"],           pl:["audimur","audimini","audiuntur"] } },
+      imperfekt:       { a:{ sg:["audiebam","audiebas","audiebat"],       pl:["audiebamus","audiebatis","audiebant"] },
+                         p:{ sg:["audiebar","audiebaris","audiebatur"],   pl:["audiebamur","audiebamini","audiebantur"] } },
+      futur:           { a:{ sg:["audiam","audies","audiet"],             pl:["audiemus","audietis","audient"] },
+                         p:{ sg:["audiar","audieris","audietur"],         pl:["audiemur","audiemini","audientur"] } },
+      perfekt:         { a:{ sg:["audivi","audivisti","audivit"],         pl:["audivimus","audivistis","audiverunt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["audiveram","audiveras","audiverat"],    pl:["audiveramus","audiveratis","audiverant"] }, p:null }
+    },
+    de: {
+      praesens:        { a:{ sg:["ich höre","du hörst","er/sie hört"],   pl:["wir hören","ihr hört","sie hören"] },
+                         p:{ sg:["ich werde gehört","du wirst gehört","er/sie wird gehört"], pl:["wir werden gehört","ihr werdet gehört","sie werden gehört"] } },
+      imperfekt:       { a:{ sg:["ich hörte","du hörtest","er/sie hörte"], pl:["wir hörten","ihr hörtet","sie hörten"] },
+                         p:{ sg:["ich wurde gehört","du wurdest gehört","er/sie wurde gehört"], pl:["wir wurden gehört","ihr wurdet gehört","sie wurden gehört"] } },
+      futur:           { a:{ sg:["ich werde hören","du wirst hören","er/sie wird hören"], pl:["wir werden hören","ihr werdet hören","sie werden hören"] },
+                         p:{ sg:["ich werde gehört werden","du wirst gehört werden","er/sie wird gehört werden"], pl:["wir werden gehört werden","ihr werdet gehört werden","sie werden gehört werden"] } },
+      perfekt:         { a:{ sg:["ich habe gehört","du hast gehört","er/sie hat gehört"], pl:["wir haben gehört","ihr habt gehört","sie haben gehört"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ich hatte gehört","du hattest gehört","er/sie hatte gehört"], pl:["wir hatten gehört","ihr hattet gehört","sie hatten gehört"] }, p:null }
+    }
+  },
+  capere: {
+    info: { lat:"capere", ppp:"captum", de:"nehmen / fassen", konj:"3b. Konjugation (i-Stamm)", stamm:"cap-" },
+    lat: {
+      praesens:        { a:{ sg:["capio","capis","capit"],               pl:["capimus","capitis","capiunt"] },
+                         p:{ sg:["capior","caperis","capitur"],           pl:["capimur","capimini","capiuntur"] } },
+      imperfekt:       { a:{ sg:["capiebam","capiebas","capiebat"],       pl:["capiebamus","capiebatis","capiebant"] },
+                         p:{ sg:["capiebar","capiebaris","capiebatur"],   pl:["capiebamur","capiebamini","capiebantur"] } },
+      futur:           { a:{ sg:["capiam","capies","capiet"],             pl:["capiemus","capietis","capient"] },
+                         p:{ sg:["capiar","capieris","capietur"],         pl:["capiemur","capiemini","capientur"] } },
+      perfekt:         { a:{ sg:["cepi","cepisti","cepit"],               pl:["cepimus","cepistis","ceperunt"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ceperam","ceperas","ceperat"],          pl:["ceperamus","ceperatis","ceperant"] }, p:null }
+    },
+    de: {
+      praesens:        { a:{ sg:["ich nehme","du nimmst","er/sie nimmt"], pl:["wir nehmen","ihr nehmt","sie nehmen"] },
+                         p:{ sg:["ich werde genommen","du wirst genommen","er/sie wird genommen"], pl:["wir werden genommen","ihr werdet genommen","sie werden genommen"] } },
+      imperfekt:       { a:{ sg:["ich nahm","du nahmst","er/sie nahm"],   pl:["wir nahmen","ihr nahmt","sie nahmen"] },
+                         p:{ sg:["ich wurde genommen","du wurdest genommen","er/sie wurde genommen"], pl:["wir wurden genommen","ihr wurdet genommen","sie wurden genommen"] } },
+      futur:           { a:{ sg:["ich werde nehmen","du wirst nehmen","er/sie wird nehmen"], pl:["wir werden nehmen","ihr werdet nehmen","sie werden nehmen"] },
+                         p:{ sg:["ich werde genommen werden","du wirst genommen werden","er/sie wird genommen werden"], pl:["wir werden genommen werden","ihr werdet genommen werden","sie werden genommen werden"] } },
+      perfekt:         { a:{ sg:["ich habe genommen","du hast genommen","er/sie hat genommen"], pl:["wir haben genommen","ihr habt genommen","sie haben genommen"] }, p:null },
+      plusquamperfekt: { a:{ sg:["ich hatte genommen","du hattest genommen","er/sie hatte genommen"], pl:["wir hatten genommen","ihr hattet genommen","sie hatten genommen"] }, p:null }
+    }
+  }
+};
+
+// ════════════════════════════════════════════════════════════════
+// ESELSBRÜCKEN-DATEN
+// ════════════════════════════════════════════════════════════════
+const ESEL = [
+  { gruppe: "Präsens", items: [
+    { id:"pr_a", titel:"Präsens Aktiv",
+      sg:["-o","-s","-t"], pl:["-mus","-tis","-nt"],
+      bruecke:"„Oskar Spielt Tennis — Musiker Tippen Nonstop\"",
+      tip:"Anfangsbuchstaben der Wörter = Endungen: <strong>O·S·T / M·T·N</strong>" },
+    { id:"pr_p", titel:"Präsens Passiv",
+      sg:["-or","-ris","-tur"], pl:["-mur","-mini","-ntur"],
+      bruecke:"Das <strong>-r</strong> ist das Passiv-Zeichen — fast alle Formen enthalten ein -r!",
+      tip:"Einzige Ausnahme: <strong>-mini</strong> (2. Pl.) hat kein -r" },
+  ]},
+  { gruppe: "Imperfekt", items: [
+    { id:"im_a", titel:"Imperfekt Aktiv",
+      sg:["-bam","-bas","-bat"], pl:["-bamus","-batis","-bant"],
+      bruecke:"Batman kämpft: <strong>BAM! BAS! BAT!</strong> — danach kommt <strong>BA</strong>mus, <strong>BA</strong>tis, <strong>BAN</strong>t",
+      tip:"Das Imperfekt-Zeichen <strong>-ba-</strong> steckt in jeder Form sichtbar" },
+    { id:"im_p", titel:"Imperfekt Passiv",
+      sg:["-bar","-baris","-batur"], pl:["-bamur","-bamini","-bantur"],
+      bruecke:"Imperfekt-Aktiv <strong>+ Passiv-r</strong>: -bam→<strong>-bar</strong>, -bas→<strong>-baris</strong>, -bat→<strong>-batur</strong>",
+      tip:"Das <strong>-ba-</strong> bleibt, am Ende kommt <strong>-r</strong> oder <strong>-ntur</strong>" },
+  ]},
+  { gruppe: "Futur 1./2. Konjugation", items: [
+    { id:"fu12_a", titel:"Futur Aktiv (1./2. Konj.)",
+      sg:["-bo","-bis","-bit"], pl:["-bimus","-bitis","-bunt"],
+      bruecke:"<strong>BOb BISsig BITter</strong> — <strong>BI</strong>mus <strong>BI</strong>tis <strong>BUN</strong>t",
+      tip:"Das <strong>-b-</strong> als Futur-Zeichen: BO·BIS·BIT / BIMUS·BITIS·BUNT" },
+    { id:"fu12_p", titel:"Futur Passiv (1./2. Konj.)",
+      sg:["-bor","-beris","-bitur"], pl:["-bimur","-bimini","-buntur"],
+      bruecke:"Futur Aktiv 1./2. <strong>+ Passiv-r</strong>: -bo→<strong>-bor</strong>, -bis→<strong>-beris</strong>, -bit→<strong>-bitur</strong>",
+      tip:"<strong>-b-</strong> Zeichen bleibt, Passiv-<strong>-r/-ntur</strong> kommt hinzu" },
+  ]},
+  { gruppe: "Futur 3./4. Konjugation", items: [
+    { id:"fu34_a", titel:"Futur Aktiv (3./4. Konj.)",
+      sg:["-am","-es","-et"], pl:["-emus","-etis","-ent"],
+      bruecke:"<strong>AM</strong> <strong>ES</strong>el <strong>ET</strong>was — <strong>EM</strong>u <strong>ET</strong>is <strong>EN</strong>te (Esel trifft Emu und Ente!)",
+      tip:"Kein -b! Futur 3+4 hat <strong>-a-/-e-</strong> statt -bi-/-bu-" },
+    { id:"fu34_p", titel:"Futur Passiv (3./4. Konj.)",
+      sg:["-ar","-eris","-etur"], pl:["-emur","-emini","-entur"],
+      bruecke:"Futur Aktiv 3./4. <strong>+ Passiv-r</strong>: -am→<strong>-ar</strong>, -es→<strong>-eris</strong>, -et→<strong>-etur</strong>",
+      tip:"Muster: Aktiv-Endung <strong>+ -r</strong> (1.Sg.) oder <strong>-ris / -tur / -ntur</strong>" },
+  ]},
+  { gruppe: "Perfekt", items: [
+    { id:"pf_a", titel:"Perfekt Aktiv",
+      sg:["-i","-isti","-it"], pl:["-imus","-istis","-erunt"],
+      bruecke:"<strong>„I ISTI IT\"</strong> — klingt wie ein Zauberspruch. Am Ende steht <strong>ERUNT</strong>: sie alle haben's vollbracht!",
+      tip:"Perfektstamm + <strong>-i / -isti / -it</strong> — <strong>-imus / -istis / -erunt</strong>" },
+  ]},
+  { gruppe: "Plusquamperfekt", items: [
+    { id:"pqp_a", titel:"Plusquamperfekt Aktiv",
+      sg:["-eram","-eras","-erat"], pl:["-eramus","-eratis","-erant"],
+      bruecke:"<strong>ERA</strong> = Zeitalter, war — alle Formen beginnen mit <strong>ERA</strong>, weil es längst vorbei ist! (Vorvergangenheit)",
+      tip:"Perfektstamm + <strong>-era-</strong> + Imperfekt-Endung: <strong>-eram · -eras · -erat / -eramus · -eratis · -erant</strong>" },
+  ]},
+];
+
+// ════════════════════════════════════════════════════════════════
+// KONFIG
+// ════════════════════════════════════════════════════════════════
+const TEMPORA = ["praesens","imperfekt","futur","perfekt","plusquamperfekt"];
+const TEMPUS_LABEL = { praesens:"Präsens", imperfekt:"Imperfekt", futur:"Futur", perfekt:"Perfekt", plusquamperfekt:"Plusquamperfekt" };
+const PERSON_SG = ["1. Sg.","2. Sg.","3. Sg."];
+const PERSON_PL = ["1. Pl.","2. Pl.","3. Pl."];
+const GENERA = { praesens:["a","p"], imperfekt:["a","p"], futur:["a","p"], perfekt:["a"], plusquamperfekt:["a"] };
+const MODE_LABEL = { lat:"Latein üben", de:"Deutsch üben", test:"Test" };
+
+let verb = null, mode = "lernen", eselMode = "lernen";
+let history = [];
+let testLocked = false;
+
+function lockTest() {
+  testLocked = true;
+  document.getElementById("verbSelect").classList.add("ctrl-locked");
+  ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
+  ["btnEndungen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
+  document.getElementById("lockBar").classList.add("active");
+}
+
+function unlockTest() {
+  testLocked = false;
+  document.getElementById("verbSelect").classList.remove("ctrl-locked");
+  ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
+  ["btnEndungen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
+  document.getElementById("lockBar").classList.remove("active");
+}
+
+function abrechenTest() {
+  unlockTest();
+  resetFields();
+}
+
+// ════════════════════════════════════════════════════════════════
+// ENDUNGEN-TABELLE (statisch beim Laden befüllen)
+// ════════════════════════════════════════════════════════════════
+(function buildEndungen() {
+  const rows = [
+    { group:"Präsens" },
+    { label:"Aktiv",    sg:["-o / -m","-s","-t"],          pl:["-mus","-tis","-nt"] },
+    { label:"Passiv",   sg:["-or / -r","-ris","-tur"],      pl:["-mur","-mini","-ntur"] },
+    { group:"Imperfekt  (Kennzeichen: -ba-)" },
+    { label:"Aktiv",    sg:["-bam","-bas","-bat"],           pl:["-bamus","-batis","-bant"] },
+    { label:"Passiv",   sg:["-bar","-baris","-batur"],       pl:["-bamur","-bamini","-bantur"] },
+    { group:"Futur 1./2. Konj.  (Kennzeichen: -bi- / -bu-)" },
+    { label:"Aktiv",    sg:["-bo","-bis","-bit"],            pl:["-bimus","-bitis","-bunt"] },
+    { label:"Passiv",   sg:["-bor","-beris","-bitur"],       pl:["-bimur","-bimini","-buntur"] },
+    { group:"Futur 3./4. Konj.  (Kennzeichen: -a- / -e-)" },
+    { label:"Aktiv",    sg:["-am","-es","-et"],              pl:["-emus","-etis","-ent"] },
+    { label:"Passiv",   sg:["-ar","-eris","-etur"],          pl:["-emur","-emini","-entur"] },
+    { group:"Perfekt Aktiv  (Perfektstamm + Endungen)" },
+    { label:"Aktiv",    sg:["-i","-isti","-it"],             pl:["-imus","-istis","-erunt"] },
+    { group:"Plusquamperfekt Aktiv  (Perfektstamm + -era- + Endungen)" },
+    { label:"Aktiv",    sg:["-eram","-eras","-erat"],        pl:["-eramus","-eratis","-erant"] },
+  ];
+  const tbody = document.getElementById("endungenBody");
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    if (r.group !== undefined) {
+      tr.classList.add("group-head");
+      tr.innerHTML = `<td colspan="7">${r.group}</td>`;
+    } else {
+      tr.innerHTML = `<td>${r.label}</td>`
+        + r.sg.map(v => `<td class="end">${v}</td>`).join("")
+        + `<td class="end" style="border-left:3px solid #ddd">${r.pl[0]}</td>`
+        + r.pl.slice(1).map(v => `<td class="end">${v}</td>`).join("");
+    }
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════════════════════════════
+// ESELSBRÜCKEN RENDERN
+// ════════════════════════════════════════════════════════════════
+function renderEselCards() {
+  const container = document.getElementById("eselCards");
+  let html = "";
+  for (const gruppe of ESEL) {
+    html += `<div class="esel-gruppe-label">${gruppe.gruppe}</div>`;
+    html += `<div class="esel-cards-grid">`;
+    for (const item of gruppe.items) {
+      html += buildEselCard(item);
+    }
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+}
+
+function buildEselCard(item) {
+  let sgHtml = "", plHtml = "";
+  for (let i = 0; i < 3; i++) {
+    if (eselMode === "lernen") {
+      sgHtml += `<div class="esel-row"><span class="esel-person">${PERSON_SG[i]}</span><span class="esel-end-display">${item.sg[i]}</span></div>`;
+      plHtml += `<div class="esel-row"><span class="esel-person">${PERSON_PL[i]}</span><span class="esel-end-display">${item.pl[i]}</span></div>`;
+    } else {
+      sgHtml += `<div class="esel-row"><span class="esel-person">${PERSON_SG[i]}</span><input class="esel-input" type="text" data-ans="${esc(item.sg[i])}" placeholder="Endung…" autocomplete="off" spellcheck="false"></div>`;
+      plHtml += `<div class="esel-row"><span class="esel-person">${PERSON_PL[i]}</span><input class="esel-input" type="text" data-ans="${esc(item.pl[i])}" placeholder="Endung…" autocomplete="off" spellcheck="false"></div>`;
+    }
+  }
+  return `<div class="esel-card">
+    <div class="esel-card-title">${item.titel}</div>
+    <div class="esel-bruecke">💡 ${item.bruecke}</div>
+    <div class="esel-tip">🔑 ${item.tip}</div>
+    <div class="esel-rows">
+      ${sgHtml}
+      <div class="esel-divider"></div>
+      ${plHtml}
+    </div>
+  </div>`;
+}
+
+function setEselMode(m) {
+  eselMode = m;
+  document.getElementById("esel-btn-lernen").classList.toggle("active", m === "lernen");
+  document.getElementById("esel-btn-quiz").classList.toggle("active", m === "quiz");
+  document.getElementById("eselActions").style.display = m === "quiz" ? "flex" : "none";
+  document.getElementById("eselScore").style.display = "none";
+  renderEselCards();
+}
+
+function checkEsel() {
+  const inputs = document.querySelectorAll("#eselCards input[data-ans]");
+  let richtig = 0, fehler = 0;
+  inputs.forEach(inp => {
+    if (inp.classList.contains("revealed")) return;
+    const val = inp.value.trim();
+    if (!val) { inp.classList.remove("correct","wrong"); return; }
+    // allow with or without leading dash
+    const normVal = (val.startsWith("-") ? val : "-" + val).toLowerCase().replace(/\s/g,"");
+    const normAns = inp.dataset.ans.toLowerCase().replace(/\s/g,"");
+    const ok = normVal === normAns;
+    inp.classList.toggle("correct", ok);
+    inp.classList.toggle("wrong", !ok);
+    if (ok) richtig++; else fehler++;
+  });
+  const total = richtig + fehler;
+  const score = document.getElementById("eselScore");
+  if (total === 0) {
+    score.style.display = "block"; score.style.color = "#777";
+    score.textContent = "Bitte zuerst Felder ausfüllen!";
+    return;
+  }
+  const pct = Math.round(richtig / total * 100);
+  score.style.display = "block";
+  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+  history.push({ zeit: now(), verb:"Endungen", modus:"Eselsbrücken-Quiz", richtig, fehler, total });
+  renderStats();
+}
+
+function revealEsel() {
+  document.querySelectorAll("#eselCards input[data-ans]").forEach(inp => {
+    if (!inp.classList.contains("correct")) {
+      inp.value = inp.dataset.ans;
+      inp.classList.add("revealed"); inp.classList.remove("wrong");
+    }
+  });
+}
+
+function resetEsel() {
+  document.querySelectorAll("#eselCards input[data-ans]").forEach(inp => {
+    inp.value = ""; inp.classList.remove("correct","wrong","revealed");
+  });
+  document.getElementById("eselScore").style.display = "none";
+}
+
+// ════════════════════════════════════════════════════════════════
+// PANEL TOGGLE
+// ════════════════════════════════════════════════════════════════
+function togglePanel(name) {
+  if (testLocked) return;
+  const panel = document.getElementById("panel-"+name);
+  const id = "btn" + name.charAt(0).toUpperCase() + name.slice(1);
+  const hidden = panel.classList.toggle("hidden");
+  document.getElementById(id).classList.toggle("on", !hidden);
+  if (name === "statistik" && !hidden) renderStats();
+  if (name === "eselsbruecken" && !hidden) renderEselCards();
+}
+
+// ════════════════════════════════════════════════════════════════
+// VERB / MODUS
+// ════════════════════════════════════════════════════════════════
+function loadVerb() {
+  if (testLocked) return;
+  verb = VB[document.getElementById("verbSelect").value] || null;
+  render();
+  if (mode === "test" && verb) lockTest();
+}
+
+function setMode(m) {
+  if (testLocked) return;
+  mode = m;
+  ["lernen","lat","de","test"].forEach(x => document.getElementById("btn-"+x).classList.toggle("active", x===m));
+  const ex = m !== "lernen";
+  ["btnCheck","btnReveal","btnReset"].forEach(id => document.getElementById(id).classList.toggle("btn-hide", !ex));
+  document.getElementById("scoreBar").style.display = "none";
+  render();
+  if (mode === "test" && verb) lockTest();
+}
+
+// ════════════════════════════════════════════════════════════════
+// KONJUGATIONSTABELLE RENDERN
+// ════════════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function cellContent(latVal, deVal) {
+  if (mode === "lernen") {
+    return `<td class="lat-cell"><div class="display-lat">${esc(latVal)}</div></td>`
+         + `<td class="de-cell"><div class="display-de">${esc(deVal)}</div></td>`;
+  }
+  const latInput = mode === "lat" || mode === "test";
+  const deInput  = mode === "de"  || mode === "test";
+  return `<td class="lat-cell">${latInput
+    ? `<input type="text" data-ans="${esc(latVal)}" placeholder="Latein…" autocomplete="off" spellcheck="false">`
+    : `<div class="display-lat">${esc(latVal)}</div>`}</td>`
+    + `<td class="de-cell">${deInput
+    ? `<input type="text" data-ans="${esc(deVal)}"  placeholder="Deutsch…" autocomplete="off" spellcheck="false">`
+    : `<div class="display-de">${esc(deVal)}</div>`}</td>`;
+}
+
+function render() {
+  const el = document.getElementById("content");
+  if (!verb) { el.innerHTML = '<p class="empty-hint">Bitte oben ein Verb auswählen.</p>'; return; }
+  const v = verb;
+  let html = `<div class="verb-header">
+    <h2>${esc(v.info.lat)} &mdash; ${esc(v.info.de)}</h2>
+    <p>${esc(v.info.konj)} &nbsp;|&nbsp; Stamm: ${esc(v.info.stamm)} &nbsp;|&nbsp; PPP: ${esc(v.info.ppp)}</p>
+  </div>`;
+  for (const t of TEMPORA) {
+    for (const g of GENERA[t]) {
+      if (!v.lat[t][g]) continue;
+      const gLabel = g === "a" ? "aktiv" : "passiv";
+      const lf = v.lat[t][g], df = v.de[t][g];
+      html += `<div class="section"><div class="section-title">${TEMPUS_LABEL[t]} ${gLabel}</div><table class="konj">`;
+      for (let i = 0; i < 3; i++) {
+        html += `<tr>
+          <td class="person-cell">${PERSON_SG[i]}</td>
+          ${cellContent(lf.sg[i], df.sg[i])}
+          <td class="person-cell">${PERSON_PL[i]}</td>
+          ${cellContent(lf.pl[i], df.pl[i])}
+        </tr>`;
+      }
+      html += `</table></div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════
+// PRÜFEN / AUFDECKEN / RESET  (Konjugationstabelle)
+// ════════════════════════════════════════════════════════════════
+function norm(s) { return s.trim().toLowerCase().replace(/\s+/g," "); }
+function now() { return new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
+
+function checkAnswers() {
+  const inputs = document.querySelectorAll("#content input[data-ans]");
+  let richtig = 0, fehler = 0;
+  inputs.forEach(inp => {
+    if (inp.classList.contains("revealed")) return;
+    const val = inp.value.trim();
+    if (!val) { inp.classList.remove("correct","wrong"); return; }
+    const ok = norm(val) === norm(inp.dataset.ans);
+    inp.classList.toggle("correct", ok); inp.classList.toggle("wrong", !ok);
+    if (ok) richtig++; else fehler++;
+  });
+  const total = richtig + fehler;
+  const bar = document.getElementById("scoreBar");
+  bar.style.display = "block";
+  if (total === 0) {
+    bar.style.background="#f5f5f5"; bar.style.color="#777";
+    bar.textContent = "Bitte zuerst Felder ausfüllen!";
+  } else {
+    const pct = Math.round(richtig/total*100);
+    bar.style.background = pct===100?"#e8f5e9":pct>=60?"#fff8e1":"#ffebee";
+    bar.style.color = "#333";
+    bar.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+    const verbKey = document.getElementById("verbSelect").value || "–";
+    history.push({ zeit:now(), verb:verbKey, modus:MODE_LABEL[mode]||mode, richtig, fehler, total });
+    renderStats();
+    if (testLocked) unlockTest();
+  }
+}
+
+function revealAll() {
+  document.querySelectorAll("#content input[data-ans]").forEach(inp => {
+    if (!inp.classList.contains("correct")) {
+      inp.value = inp.dataset.ans; inp.classList.add("revealed"); inp.classList.remove("wrong");
+    }
+  });
+}
+
+function resetFields() {
+  document.querySelectorAll("#content input[data-ans]").forEach(inp => {
+    inp.value = ""; inp.classList.remove("correct","wrong","revealed");
+  });
+  document.getElementById("scoreBar").style.display = "none";
+}
+
+// ════════════════════════════════════════════════════════════════
+// STATISTIK
+// ════════════════════════════════════════════════════════════════
+function renderStats() {
+  const totalR = history.reduce((s,e)=>s+e.richtig,0);
+  const totalF = history.reduce((s,e)=>s+e.fehler,0);
+  const totalA = totalR + totalF;
+  const pct = totalA ? Math.round(totalR/totalA*100) : 0;
+
+  document.getElementById("statsSummary").innerHTML = totalA === 0
+    ? `<p class="no-history">Noch keine Übungen durchgeführt.</p>`
+    : `<div class="stat-box total">  <div class="num">${totalA}</div><div class="lbl">Gesamt</div></div>
+       <div class="stat-box richtig"><div class="num">${totalR}</div><div class="lbl">Richtig</div></div>
+       <div class="stat-box fehler"> <div class="num">${totalF}</div><div class="lbl">Fehler</div></div>
+       <div class="stat-box pct">   <div class="num">${pct} %</div><div class="lbl">Quote</div></div>`;
+
+  if (history.length === 0) {
+    document.getElementById("historyTable").innerHTML = "";
+    return;
+  }
+  const rows = history.slice().reverse().map(e => {
+    const p = Math.round(e.richtig/e.total*100);
+    return `<tr>
+      <td>${e.zeit}</td>
+      <td><em>${e.verb}</em></td>
+      <td>${e.modus}</td>
+      <td>${e.total}</td>
+      <td class="hist-richtig">${e.richtig}</td>
+      <td class="hist-fehler">${e.fehler}</td>
+      <td>${p} %</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("historyTable").innerHTML = `
+    <table class="hist-table">
+      <thead><tr><th>Zeit</th><th>Verb</th><th>Modus</th><th>Gesamt</th><th>Richtig</th><th>Fehler</th><th>Quote</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function resetStats() { history = []; renderStats(); }
+
+document.getElementById("verbSelect").addEventListener("change", loadVerb);
+document.getElementById("btn-lernen").addEventListener("click", () => setMode("lernen"));
+document.getElementById("btn-lat").addEventListener("click", () => setMode("lat"));
+document.getElementById("btn-de").addEventListener("click", () => setMode("de"));
+document.getElementById("btn-test").addEventListener("click", () => setMode("test"));
+document.getElementById("btnEndungen").addEventListener("click", () => togglePanel("endungen"));
+document.getElementById("btnEselsbruecken").addEventListener("click", () => togglePanel("eselsbruecken"));
+document.getElementById("btnStatistik").addEventListener("click", () => togglePanel("statistik"));
+document.getElementById("btnCheck").addEventListener("click", checkAnswers);
+document.getElementById("btnReveal").addEventListener("click", revealAll);
+document.getElementById("btnReset").addEventListener("click", resetFields);
+document.getElementById("lockBar").querySelector(".btn-abbruch").addEventListener("click", abrechenTest);
+document.getElementById("esel-btn-lernen").addEventListener("click", () => setEselMode("lernen"));
+document.getElementById("esel-btn-quiz").addEventListener("click", () => setEselMode("quiz"));
+document.getElementById("btnEselCheck").addEventListener("click", checkEsel);
+document.getElementById("btnEselReveal").addEventListener("click", revealEsel);
+document.getElementById("btnEselReset").addEventListener("click", resetEsel);
+document.querySelector(".btn-stats-reset").addEventListener("click", resetStats);
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
+</body>
+</html>
