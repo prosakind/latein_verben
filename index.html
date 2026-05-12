@@ -189,6 +189,53 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
   .sep { display: none; }
   .controls { gap: 8px; }
 }
+
+/* ── Deklination ── */
+.dekl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.dekl-card { border: 1.5px solid #e8ddd0; border-radius: 8px; padding: 12px 14px; background: #fffef9; }
+.dekl-card-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+.dekl-titel { font-size: 13px; font-weight: 800; color: #4a2c0a; }
+.dekl-genus { font-size: 11px; color: #8b5e20; background: #fdf5e4; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+.dekl-beispiel { font-size: 11px; color: #888; margin-bottom: 8px; }
+.dekl-table { width: 100%; border-collapse: collapse; }
+.dekl-table th { background: #faf3e8; color: #8b5e20; padding: 4px 8px; text-align: center; border: 1px solid #ede5d8; font-size: 11px; }
+.dekl-table th:first-child { text-align: left; }
+.dekl-kasus { padding: 4px 8px; border: 1px solid #ede5d8; font-weight: 700; color: #6b3a10; font-size: 11px; background: #faf6f0; white-space: nowrap; }
+.dekl-end { padding: 4px 8px; border: 1px solid #ede5d8; font-family: 'Georgia', serif; font-style: italic; text-align: center; color: #1a1a1a; font-size: 13px; }
+.dekl-end.nom-akk { color: #1565c0; font-weight: 700; }
+.dekl-input { width: 100%; padding: 3px 6px; border: 1.5px solid #d0c0a0; border-radius: 4px; font-size: 12px; font-family: 'Georgia', serif; font-style: italic; background: #fffef9; box-sizing: border-box; }
+.dekl-input:focus { outline: none; border-color: #8b5e20; background: white; }
+.dekl-input.correct { background: #e8f5e9 !important; border-color: #43a047 !important; }
+.dekl-input.wrong   { background: #ffebee !important; border-color: #e53935 !important; }
+.dekl-input.revealed{ background: #e3f2fd !important; border-color: #1e88e5 !important; }
+.dekl-mode-group { display: flex; gap: 5px; }
+.dekl-actions { display: none; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.dekl-score { display: none; margin-top: 10px; padding: 10px 16px; background: #f9f6f0; border-radius: 8px; font-size: 14px; font-weight: 700; border: 1px solid #e8ddd0; }
+@media (pointer: coarse) { .dekl-input { font-size: 16px !important; padding: 6px 8px; min-height: 36px; } }
+
+/* ── Adverbialkonstruktionen ── */
+.adv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.adv-card { border: 1.5px solid #e8ddd0; border-radius: 8px; padding: 12px 14px; background: #fffef9; }
+.adv-card-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+.adv-name { font-size: 13px; font-weight: 800; color: #4a2c0a; }
+.adv-lat  { font-size: 11px; color: #8b5e20; background: #fdf5e4; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-style: italic; white-space: nowrap; }
+.adv-frage { font-size: 12px; color: #555; margin-bottom: 6px; font-style: italic; }
+.adv-formel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.adv-formel-lbl { font-size: 11px; font-weight: 700; color: #6b3a10; white-space: nowrap; }
+.adv-formel-val { font-family: 'Georgia', serif; font-style: italic; font-size: 13px; color: #1a1a1a; font-weight: 700; }
+.adv-input { flex: 1; padding: 4px 8px; border: 1.5px solid #d0c0a0; border-radius: 4px; font-size: 13px; font-family: 'Georgia', serif; font-style: italic; background: #fffef9; }
+.adv-input:focus { outline: none; border-color: #8b5e20; background: white; }
+.adv-input.correct { background: #e8f5e9 !important; border-color: #43a047 !important; }
+.adv-input.wrong   { background: #ffebee !important; border-color: #e53935 !important; }
+.adv-input.revealed{ background: #e3f2fd !important; border-color: #1e88e5 !important; }
+.adv-divider { height: 1px; background: #f0e8d8; margin: 6px 0; }
+.adv-bsp { font-family: 'Georgia', serif; font-style: italic; font-size: 13px; color: #1a1a1a; margin-bottom: 2px; }
+.adv-ue  { font-size: 12px; color: #555; margin-bottom: 5px; }
+.adv-tipp { font-size: 11px; color: #999; padding: 4px 8px; background: #fdf5e4; border-left: 2px solid #c8a96e; border-radius: 0 4px 4px 0; }
+.adv-tipp strong { color: #8b5e20; }
+.adv-actions { display: none; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.adv-score { display: none; margin-top: 10px; padding: 10px 16px; background: #f9f6f0; border-radius: 8px; font-size: 14px; font-weight: 700; border: 1px solid #e8ddd0; }
+@media (pointer: coarse) { .adv-input { font-size: 16px !important; padding: 6px 8px; min-height: 40px; } }
 </style>
 </head>
 <body>
@@ -212,6 +259,8 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
   </div>
   <div class="sep"></div>
   <button class="btn btn-panel" id="btnEndungen">Endungen</button>
+  <button class="btn btn-panel" id="btnDeklination">Deklination</button>
+  <button class="btn btn-panel" id="btnAdverbial">Adverbial</button>
   <button class="btn btn-panel" id="btnEselsbruecken">Eselsbrücken</button>
   <button class="btn btn-panel" id="btnStatistik">Statistik</button>
   <div class="sep"></div>
@@ -235,6 +284,42 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
     </thead>
     <tbody id="endungenBody"></tbody>
   </table>
+</div>
+
+<!-- ── Deklination-Panel ── -->
+<div class="panel hidden" id="panel-deklination">
+  <div class="panel-header">
+    <div class="panel-title">Substantive — Deklination</div>
+    <div class="dekl-mode-group">
+      <button class="esel-btn active" id="dekl-btn-lernen">Lernen</button>
+      <button class="esel-btn" id="dekl-btn-quiz">Quiz</button>
+    </div>
+  </div>
+  <div class="dekl-grid" id="deklBody"></div>
+  <div class="dekl-actions" id="deklActions">
+    <button class="btn btn-check"  id="btnDeklCheck">Prüfen ✓</button>
+    <button class="btn btn-reveal" id="btnDeklReveal">Aufdecken</button>
+    <button class="btn btn-reset"  id="btnDeklReset">Zurücksetzen</button>
+  </div>
+  <div class="dekl-score" id="deklScore"></div>
+</div>
+
+<!-- ── Adverbial-Panel ── -->
+<div class="panel hidden" id="panel-adverbial">
+  <div class="panel-header">
+    <div class="panel-title">Adverbialkonstruktionen</div>
+    <div class="dekl-mode-group">
+      <button class="esel-btn active" id="adv-btn-lernen">Lernen</button>
+      <button class="esel-btn" id="adv-btn-quiz">Quiz</button>
+    </div>
+  </div>
+  <div class="adv-grid" id="advBody"></div>
+  <div class="adv-actions" id="advActions">
+    <button class="btn btn-check"  id="btnAdvCheck">Prüfen ✓</button>
+    <button class="btn btn-reveal" id="btnAdvReveal">Aufdecken</button>
+    <button class="btn btn-reset"  id="btnAdvReset">Zurücksetzen</button>
+  </div>
+  <div class="adv-score" id="advScore"></div>
 </div>
 
 <!-- ── Eselsbrücken-Panel ── -->
@@ -472,7 +557,7 @@ function lockTest() {
   testLocked = true;
   document.getElementById("verbSelect").classList.add("ctrl-locked");
   ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
-  ["btnEndungen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
+  ["btnEndungen","btnDeklination","btnAdverbial","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
   document.getElementById("lockBar").classList.add("active");
 }
 
@@ -480,7 +565,7 @@ function unlockTest() {
   testLocked = false;
   document.getElementById("verbSelect").classList.remove("ctrl-locked");
   ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
-  ["btnEndungen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
+  ["btnEndungen","btnDeklination","btnAdverbial","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
   document.getElementById("lockBar").classList.remove("active");
 }
 
@@ -526,6 +611,230 @@ function abrechenTest() {
     tbody.appendChild(tr);
   });
 })();
+
+// ════════════════════════════════════════════════════════════════
+// DEKLINATION
+// ════════════════════════════════════════════════════════════════
+const DEKL_KS = ["Nom.","Gen.","Dat.","Akk.","Abl.","Vok."];
+const DEKL_NA = [0,3];
+const DEKL_DATA = [
+  { t:"1. Deklination", g:"Femininum", b:"puella, -ae, f. — Mädchen",
+    sg:["-a","-ae","-ae","-am","-ā","-a"], pl:["-ae","-ārum","-īs","-ās","-īs","-ae"] },
+  { t:"2. Deklination", g:"Maskulinum", b:"servus, -i, m. — Sklave",
+    sg:["-us / -er","-ī","-ō","-um","-ō","-e / -er"], pl:["-ī","-ōrum","-īs","-ōs","-īs","-ī"] },
+  { t:"2. Deklination", g:"Neutrum", b:"bellum, -i, n. — Krieg",
+    sg:["-um","-ī","-ō","-um","-ō","-um"], pl:["-a","-ōrum","-īs","-a","-īs","-a"] },
+  { t:"3. Deklination", g:"Mask./Fem. (kons.)", b:"rex, regis, m. — König",
+    sg:["–","-is","-ī","-em","-e","= Nom."], pl:["-ēs","-um","-ibus","-ēs","-ibus","-ēs"] },
+  { t:"3. Deklination", g:"Neutrum (kons.)", b:"corpus, corporis, n. — Körper",
+    sg:["–","-is","-ī","= Nom.","-e","= Nom."], pl:["-a","-um","-ibus","-a","-ibus","-a"] },
+  { t:"3. Deklination", g:"i-Stamm (Mask./Fem.)", b:"civis, -is, m. — Bürger",
+    sg:["-is","-is","-ī","-em","-ī","-is"], pl:["-ēs","-ium","-ibus","-ēs / -īs","-ibus","-ēs"] },
+  { t:"3. Deklination", g:"i-Stamm (Neutrum)", b:"mare, -is, n. — Meer",
+    sg:["–","-is","-ī","= Nom.","-ī","= Nom."], pl:["-ia","-ium","-ibus","-ia","-ibus","-ia"] },
+  { t:"4. Deklination", g:"Maskulinum", b:"manus, -us, f. — Hand",
+    sg:["-us","-ūs","-uī","-um","-ū","-us"], pl:["-ūs","-uum","-ibus","-ūs","-ibus","-ūs"] },
+  { t:"4. Deklination", g:"Neutrum", b:"genu, -us, n. — Knie",
+    sg:["-ū","-ūs","-ū","-ū","-ū","-ū"], pl:["-ua","-uum","-ibus","-ua","-ibus","-ua"] },
+  { t:"5. Deklination", g:"Femininum", b:"res, -ei, f. — Sache / Ding",
+    sg:["-ēs","-eī","-eī","-em","-ē","-ēs"], pl:["-ēs","-ērum","-ēbus","-ēs","-ēbus","-ēs"] },
+];
+let deklMode = "lernen";
+
+function normDekl(s) {
+  return s.trim().toLowerCase()
+    .replace(/ā/g,"a").replace(/ē/g,"e").replace(/ī/g,"i").replace(/ō/g,"o").replace(/ū/g,"u");
+}
+
+function deklCell(val, isNA) {
+  const cls = "dekl-end" + (isNA ? " nom-akk" : "");
+  const skip = val === "–" || val.startsWith("=");
+  if (deklMode === "lernen" || skip) return `<td class="${cls}">${val}</td>`;
+  return `<td class="${cls}"><input class="dekl-input" type="text" data-ans="${esc(val)}" placeholder="…" autocomplete="off" spellcheck="false"></td>`;
+}
+
+function renderDeklination() {
+  let html = "";
+  for (const d of DEKL_DATA) {
+    html += `<div class="dekl-card">
+      <div class="dekl-card-header"><span class="dekl-titel">${d.t}</span><span class="dekl-genus">${d.g}</span></div>
+      <div class="dekl-beispiel">Bsp.: <em>${d.b}</em></div>
+      <table class="dekl-table">
+        <thead><tr><th>Kasus</th><th>Sg.</th><th>Pl.</th></tr></thead>
+        <tbody>${DEKL_KS.map((k,i) => `<tr><td class="dekl-kasus">${k}</td>${deklCell(d.sg[i],DEKL_NA.includes(i))}${deklCell(d.pl[i],DEKL_NA.includes(i))}</tr>`).join("")}</tbody>
+      </table></div>`;
+  }
+  document.getElementById("deklBody").innerHTML = html;
+}
+renderDeklination();
+
+function setDeklMode(m) {
+  deklMode = m;
+  document.getElementById("dekl-btn-lernen").classList.toggle("active", m === "lernen");
+  document.getElementById("dekl-btn-quiz").classList.toggle("active", m === "quiz");
+  document.getElementById("deklActions").style.display = m === "quiz" ? "flex" : "none";
+  document.getElementById("deklScore").style.display = "none";
+  renderDeklination();
+}
+
+function checkDekl() {
+  const inputs = document.querySelectorAll("#deklBody input[data-ans]");
+  let richtig = 0, fehler = 0;
+  inputs.forEach(inp => {
+    if (inp.classList.contains("revealed")) return;
+    const val = inp.value.trim();
+    if (!val) { inp.classList.remove("correct","wrong"); return; }
+    // Accept with or without leading dash, with or without macrons
+    // Also accept any variant when answer contains " / "
+    const answers = inp.dataset.ans.split(" / ").map(a => normDekl(a));
+    const userNorm = normDekl(val.startsWith("-") ? val : "-" + val);
+    const userNorm2 = normDekl(val);
+    const ok = answers.some(a => userNorm === a || userNorm2 === a);
+    inp.classList.toggle("correct", ok);
+    inp.classList.toggle("wrong", !ok);
+    if (ok) richtig++; else fehler++;
+  });
+  const total = richtig + fehler;
+  const score = document.getElementById("deklScore");
+  if (total === 0) {
+    score.style.display = "block"; score.style.color = "#777";
+    score.textContent = "Bitte zuerst Felder ausfüllen!"; return;
+  }
+  const pct = Math.round(richtig / total * 100);
+  score.style.display = "block";
+  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+  history.push({ zeit:now(), verb:"Deklination", modus:"Deklinations-Quiz", richtig, fehler, total });
+  renderStats();
+}
+
+function revealDekl() {
+  document.querySelectorAll("#deklBody input[data-ans]").forEach(inp => {
+    if (!inp.classList.contains("correct")) {
+      inp.value = inp.dataset.ans;
+      inp.classList.add("revealed"); inp.classList.remove("wrong");
+    }
+  });
+}
+
+function resetDekl() {
+  document.querySelectorAll("#deklBody input[data-ans]").forEach(inp => {
+    inp.value = ""; inp.classList.remove("correct","wrong","revealed");
+  });
+  document.getElementById("deklScore").style.display = "none";
+}
+
+// ════════════════════════════════════════════════════════════════
+// ADVERBIALKONSTRUKTIONEN
+// ════════════════════════════════════════════════════════════════
+const ADV_DATA = [
+  { name:"Adverbial des Urhebers",    lat:"Ablativus auctoris",
+    formel:"a/ab + Abl.",             frage:"Von wem? (durch wen?)",
+    bsp:"Caesar ab militibus amatur.", ue:"Caesar wird von den Soldaten geliebt.",
+    tipp:"Nur bei <strong>Passiv</strong>! Nur bei <strong>Personen</strong> — Sachen → Ablativus instrumenti (ohne Präp.)" },
+  { name:"Adverbial des Mittels",     lat:"Ablativus instrumenti",
+    formel:"Abl. (ohne Präp.)",       frage:"Womit? Wodurch?",
+    bsp:"Milites gladiis pugnant.",    ue:"Die Soldaten kämpfen mit Schwertern.",
+    tipp:"Nur bei <strong>Sachen</strong> — Personen → Ablativus auctoris (a/ab)" },
+  { name:"Adverbial des Grundes",     lat:"Ablativus causae",
+    formel:"Abl. (ohne Präp.)",       frage:"Warum? Aus welchem Grund?",
+    bsp:"Amore patriae pugnant.",      ue:"Sie kämpfen aus Liebe zum Vaterland.",
+    tipp:"Häufig bei Abstrakta: <strong>amor, metus, timor, ira…</strong>" },
+  { name:"Adverbial der Art und Weise", lat:"Ablativus modi",
+    formel:"(cum +) Abl.",            frage:"Wie? Auf welche Weise?",
+    bsp:"Magna cum cura scribit.",     ue:"Er schreibt mit großer Sorgfalt.",
+    tipp:"Mit Adjektiv: <strong>magna cum cura</strong> — Adj. zwischen cum und Subst." },
+  { name:"Adverbial der Begleitung",  lat:"Ablativus sociativus",
+    formel:"cum + Abl.",              frage:"Mit wem? In wessen Begleitung?",
+    bsp:"Cum amicis ambulat.",         ue:"Er geht mit seinen Freunden spazieren.",
+    tipp:"<strong>cum</strong> ist obligatorisch bei Personen" },
+  { name:"Adverbial der Trennung",    lat:"Ablativus separationis",
+    formel:"a/ab / ex / de + Abl.",   frage:"Wovon weg? Wovon getrennt?",
+    bsp:"Hostes a castris arcet.",     ue:"Er hält die Feinde vom Lager fern.",
+    tipp:"Bei Verben: <strong>prohibere, arcere, liberare, separare…</strong>" },
+  { name:"Adverbial des Vergleichs",  lat:"Ablativus comparationis",
+    formel:"Abl. (nach Komparativ)",  frage:"Als…? (nach Komparativ)",
+    bsp:"Caesar fortior Pompeio est.", ue:"Caesar ist tapferer als Pompeius.",
+    tipp:"Alternative: <strong>quam</strong> + gleicher Kasus: <em>fortior quam Pompeius</em>" },
+  { name:"Adverbial der Zeit",        lat:"Ablativus temporis",
+    formel:"Abl. (ohne Präp.)",       frage:"Wann? In welcher Zeit?",
+    bsp:"Prima luce discessit.",       ue:"Er brach bei Tagesanbruch auf.",
+    tipp:"Zeitpunkt: <strong>Abl.</strong> — Zeitdauer: <strong>Akk.</strong> (z.B. tres horas)" },
+  { name:"Adverbial des Ortes",       lat:"Ablativus loci",
+    formel:"in / sub + Abl.",         frage:"Wo?",
+    bsp:"In foro stat.",               ue:"Er steht auf dem Forum.",
+    tipp:"Städtenamen 1./2. Dekl. Sg.: <strong>Lokativ</strong> (-ae / -i), nicht in + Abl." },
+  { name:"Ablativus absolutus",       lat:"Ablativus absolutus",
+    formel:"Abl. (Subst.) + Abl. (Ptz.)", frage:"Als…? Nachdem…? Da…? Obwohl…?",
+    bsp:"Caesare duce, milites vicerunt.", ue:"Unter Caesars Führung siegten die Soldaten.",
+    tipp:"Das Subjekt des Abl. abs. darf <strong>nicht</strong> im Hauptsatz auftreten!" },
+];
+let advMode = "lernen";
+
+function renderAdverbial() {
+  let html = "";
+  for (const d of ADV_DATA) {
+    const formelField = advMode === "lernen"
+      ? `<span class="adv-formel-val">${d.formel}</span>`
+      : `<input class="adv-input" type="text" data-ans="${esc(d.formel)}" placeholder="Formel eingeben…" autocomplete="off" spellcheck="false">`;
+    html += `<div class="adv-card">
+      <div class="adv-card-header"><span class="adv-name">${d.name}</span><span class="adv-lat">${d.lat}</span></div>
+      <div class="adv-frage">❓ ${d.frage}</div>
+      <div class="adv-formel-row"><span class="adv-formel-lbl">Formel:</span>${formelField}</div>
+      <div class="adv-divider"></div>
+      <div class="adv-bsp">${d.bsp}</div>
+      <div class="adv-ue">→ ${d.ue}</div>
+      <div class="adv-tipp">💡 ${d.tipp}</div>
+    </div>`;
+  }
+  document.getElementById("advBody").innerHTML = html;
+}
+renderAdverbial();
+
+function setAdvMode(m) {
+  advMode = m;
+  document.getElementById("adv-btn-lernen").classList.toggle("active", m === "lernen");
+  document.getElementById("adv-btn-quiz").classList.toggle("active", m === "quiz");
+  document.getElementById("advActions").style.display = m === "quiz" ? "flex" : "none";
+  document.getElementById("advScore").style.display = "none";
+  renderAdverbial();
+}
+
+function normAdv(s) { return s.trim().toLowerCase().replace(/\s+/g," "); }
+
+function checkAdv() {
+  const inputs = document.querySelectorAll("#advBody input[data-ans]");
+  let richtig = 0, fehler = 0;
+  inputs.forEach(inp => {
+    if (inp.classList.contains("revealed")) return;
+    const val = inp.value.trim();
+    if (!val) { inp.classList.remove("correct","wrong"); return; }
+    const ok = normAdv(val) === normAdv(inp.dataset.ans);
+    inp.classList.toggle("correct", ok);
+    inp.classList.toggle("wrong", !ok);
+    if (ok) richtig++; else fehler++;
+  });
+  const total = richtig + fehler;
+  const score = document.getElementById("advScore");
+  if (total === 0) { score.style.display="block"; score.style.color="#777"; score.textContent="Bitte zuerst Felder ausfüllen!"; return; }
+  const pct = Math.round(richtig/total*100);
+  score.style.display = "block";
+  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+  history.push({ zeit:now(), verb:"Adverbial", modus:"Adverbial-Quiz", richtig, fehler, total });
+  renderStats();
+}
+
+function revealAdv() {
+  document.querySelectorAll("#advBody input[data-ans]").forEach(inp => {
+    if (!inp.classList.contains("correct")) { inp.value=inp.dataset.ans; inp.classList.add("revealed"); inp.classList.remove("wrong"); }
+  });
+}
+
+function resetAdv() {
+  document.querySelectorAll("#advBody input[data-ans]").forEach(inp => {
+    inp.value=""; inp.classList.remove("correct","wrong","revealed");
+  });
+  document.getElementById("advScore").style.display="none";
+}
 
 // ════════════════════════════════════════════════════════════════
 // ESELSBRÜCKEN RENDERN
@@ -802,6 +1111,18 @@ document.getElementById("btn-lat").addEventListener("click", () => setMode("lat"
 document.getElementById("btn-de").addEventListener("click", () => setMode("de"));
 document.getElementById("btn-test").addEventListener("click", () => setMode("test"));
 document.getElementById("btnEndungen").addEventListener("click", () => togglePanel("endungen"));
+document.getElementById("btnDeklination").addEventListener("click", () => togglePanel("deklination"));
+document.getElementById("btnAdverbial").addEventListener("click", () => togglePanel("adverbial"));
+document.getElementById("adv-btn-lernen").addEventListener("click", () => setAdvMode("lernen"));
+document.getElementById("adv-btn-quiz").addEventListener("click", () => setAdvMode("quiz"));
+document.getElementById("btnAdvCheck").addEventListener("click", checkAdv);
+document.getElementById("btnAdvReveal").addEventListener("click", revealAdv);
+document.getElementById("btnAdvReset").addEventListener("click", resetAdv);
+document.getElementById("dekl-btn-lernen").addEventListener("click", () => setDeklMode("lernen"));
+document.getElementById("dekl-btn-quiz").addEventListener("click", () => setDeklMode("quiz"));
+document.getElementById("btnDeklCheck").addEventListener("click", checkDekl);
+document.getElementById("btnDeklReveal").addEventListener("click", revealDekl);
+document.getElementById("btnDeklReset").addEventListener("click", resetDekl);
 document.getElementById("btnEselsbruecken").addEventListener("click", () => togglePanel("eselsbruecken"));
 document.getElementById("btnStatistik").addEventListener("click", () => togglePanel("statistik"));
 document.getElementById("btnCheck").addEventListener("click", checkAnswers);
