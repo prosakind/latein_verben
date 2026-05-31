@@ -236,6 +236,16 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
 .adv-actions { display: none; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .adv-score { display: none; margin-top: 10px; padding: 10px 16px; background: #f9f6f0; border-radius: 8px; font-size: 14px; font-weight: 700; border: 1px solid #e8ddd0; }
 @media (pointer: coarse) { .adv-input { font-size: 16px !important; padding: 6px 8px; min-height: 40px; } }
+
+/* ── Relativpronomen ── */
+.rp-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.rp-table { border-collapse: collapse; font-size: 13px; min-width: 420px; }
+.rp-table th { background: #faf3e8; color: #8b5e20; padding: 5px 10px; text-align: center; border: 1px solid #ede5d8; font-size: 11px; white-space: nowrap; }
+.rp-table th.rp-kasus-header { text-align: left; }
+.rp-table th.rp-sg-header { border-right: 3px solid #c8a96e; }
+.rp-table td.dekl-end.rp-sg-last { border-right: 3px solid #c8a96e; }
+.rp-hint { margin-top: 12px; padding: 8px 12px; background: #fdf5e4; border-left: 3px solid #c8a96e; border-radius: 0 4px 4px 0; font-size: 12px; color: #555; line-height: 1.6; }
+.rp-hint strong { color: #4a2c0a; }
 </style>
 </head>
 <body>
@@ -261,6 +271,7 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
   <button class="btn btn-panel" id="btnEndungen">Endungen</button>
   <button class="btn btn-panel" id="btnDeklination">Deklination</button>
   <button class="btn btn-panel" id="btnAdverbial">Adverbial</button>
+  <button class="btn btn-panel" id="btnRelPronomen">Relativpronomen</button>
   <button class="btn btn-panel" id="btnEselsbruecken">Eselsbrücken</button>
   <button class="btn btn-panel" id="btnStatistik">Statistik</button>
   <div class="sep"></div>
@@ -320,6 +331,24 @@ input.revealed { background: #e3f2fd !important; border-color: #1e88e5 !importan
     <button class="btn btn-reset"  id="btnAdvReset">Zurücksetzen</button>
   </div>
   <div class="adv-score" id="advScore"></div>
+</div>
+
+<!-- ── Relativpronomen-Panel ── -->
+<div class="panel hidden" id="panel-relPronomen">
+  <div class="panel-header">
+    <div class="panel-title">Relativpronomen — qui, quae, quod</div>
+    <div class="dekl-mode-group">
+      <button class="esel-btn active" id="rp-btn-lernen">Lernen</button>
+      <button class="esel-btn" id="rp-btn-quiz">Quiz</button>
+    </div>
+  </div>
+  <div id="rpBody"></div>
+  <div class="dekl-actions" id="rpActions">
+    <button class="btn btn-check"  id="btnRpCheck">Prüfen ✓</button>
+    <button class="btn btn-reveal" id="btnRpReveal">Aufdecken</button>
+    <button class="btn btn-reset"  id="btnRpReset">Zurücksetzen</button>
+  </div>
+  <div class="dekl-score" id="rpScore"></div>
 </div>
 
 <!-- ── Eselsbrücken-Panel ── -->
@@ -482,6 +511,28 @@ const VB = {
 };
 
 // ════════════════════════════════════════════════════════════════
+// RELATIVPRONOMEN-DATEN  qui, quae, quod
+// ════════════════════════════════════════════════════════════════
+const RELP = {
+  kasus: ["Nom.", "Gen.", "Dat.", "Akk.", "Abl."],
+  // [mask., fem., neutr.]
+  sg: [
+    ["qui",   "quae",  "quod"],
+    ["cuius", "cuius", "cuius"],
+    ["cui",   "cui",   "cui"],
+    ["quem",  "quam",  "quod"],
+    ["quo",   "qua",   "quo"],
+  ],
+  pl: [
+    ["qui",    "quae",   "quae"],
+    ["quorum", "quarum", "quorum"],
+    ["quibus", "quibus", "quibus"],
+    ["quos",   "quas",   "quae"],
+    ["quibus", "quibus", "quibus"],
+  ]
+};
+
+// ════════════════════════════════════════════════════════════════
 // ESELSBRÜCKEN-DATEN
 // ════════════════════════════════════════════════════════════════
 const ESEL = [
@@ -557,7 +608,7 @@ function lockTest() {
   testLocked = true;
   document.getElementById("verbSelect").classList.add("ctrl-locked");
   ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
-  ["btnEndungen","btnDeklination","btnAdverbial","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
+  ["btnEndungen","btnDeklination","btnAdverbial","btnRelPronomen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.add("ctrl-locked"));
   document.getElementById("lockBar").classList.add("active");
 }
 
@@ -565,7 +616,7 @@ function unlockTest() {
   testLocked = false;
   document.getElementById("verbSelect").classList.remove("ctrl-locked");
   ["btn-lernen","btn-lat","btn-de"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
-  ["btnEndungen","btnDeklination","btnAdverbial","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
+  ["btnEndungen","btnDeklination","btnAdverbial","btnRelPronomen","btnEselsbruecken","btnStatistik"].forEach(id => document.getElementById(id).classList.remove("ctrl-locked"));
   document.getElementById("lockBar").classList.remove("active");
 }
 
@@ -684,8 +735,6 @@ function checkDekl() {
     if (inp.classList.contains("revealed")) return;
     const val = inp.value.trim();
     if (!val) { inp.classList.remove("correct","wrong"); return; }
-    // Accept with or without leading dash, with or without macrons
-    // Also accept any variant when answer contains " / "
     const answers = inp.dataset.ans.split(" / ").map(a => normDekl(a));
     const userNorm = normDekl(val.startsWith("-") ? val : "-" + val);
     const userNorm2 = normDekl(val);
@@ -837,6 +886,105 @@ function resetAdv() {
 }
 
 // ════════════════════════════════════════════════════════════════
+// RELATIVPRONOMEN
+// ════════════════════════════════════════════════════════════════
+let rpMode = "lernen";
+
+function rpCell(val, borderRight) {
+  const style = borderRight ? ' style="border-right:3px solid #c8a96e"' : '';
+  if (rpMode === "lernen") {
+    return `<td class="dekl-end"${style}>${val}</td>`;
+  }
+  return `<td class="dekl-end"${style}><input class="dekl-input" type="text" data-ans="${esc(val)}" placeholder="…" autocomplete="off" spellcheck="false"></td>`;
+}
+
+function renderRelPron() {
+  const G = ["m.","f.","n."];
+  let html = `<div class="rp-table-wrap">
+    <table class="rp-table">
+      <thead>
+        <tr>
+          <th class="rp-kasus-header" rowspan="2">Kasus</th>
+          <th colspan="3" class="rp-sg-header">Singular</th>
+          <th colspan="3">Plural</th>
+        </tr>
+        <tr>
+          <th>${G[0]}</th><th>${G[1]}</th><th class="rp-sg-header">${G[2]}</th>
+          <th>${G[0]}</th><th>${G[1]}</th><th>${G[2]}</th>
+        </tr>
+      </thead>
+      <tbody>`;
+  for (let i = 0; i < RELP.kasus.length; i++) {
+    html += `<tr><td class="dekl-kasus">${RELP.kasus[i]}</td>`;
+    html += rpCell(RELP.sg[i][0], false);
+    html += rpCell(RELP.sg[i][1], false);
+    html += rpCell(RELP.sg[i][2], true);
+    html += rpCell(RELP.pl[i][0], false);
+    html += rpCell(RELP.pl[i][1], false);
+    html += rpCell(RELP.pl[i][2], false);
+    html += `</tr>`;
+  }
+  html += `</tbody></table></div>
+    <div class="rp-hint">
+      💡 <strong>Merkhilfen:</strong>
+      Gen. Sg. aller Genera: <em>cuius</em> &nbsp;·&nbsp;
+      Dat. Sg. aller Genera: <em>cui</em> &nbsp;·&nbsp;
+      Dat./Abl. Pl. aller Genera: <em>quibus</em> &nbsp;·&nbsp;
+      Nom./Akk. Sg. Neutr.: <em>quod</em> &nbsp;·&nbsp;
+      Nom. Pl. m./f./n.: <em>qui / quae / quae</em>
+    </div>`;
+  document.getElementById("rpBody").innerHTML = html;
+}
+renderRelPron();
+
+function setRpMode(m) {
+  rpMode = m;
+  document.getElementById("rp-btn-lernen").classList.toggle("active", m === "lernen");
+  document.getElementById("rp-btn-quiz").classList.toggle("active", m === "quiz");
+  document.getElementById("rpActions").style.display = m === "quiz" ? "flex" : "none";
+  document.getElementById("rpScore").style.display = "none";
+  renderRelPron();
+}
+
+function checkRelPron() {
+  const inputs = document.querySelectorAll("#rpBody input[data-ans]");
+  let richtig = 0, fehler = 0;
+  inputs.forEach(inp => {
+    if (inp.classList.contains("revealed")) return;
+    const val = inp.value.trim();
+    if (!val) { inp.classList.remove("correct","wrong"); return; }
+    const ok = val.toLowerCase() === inp.dataset.ans.toLowerCase();
+    inp.classList.toggle("correct", ok);
+    inp.classList.toggle("wrong", !ok);
+    if (ok) richtig++; else fehler++;
+  });
+  const total = richtig + fehler;
+  const score = document.getElementById("rpScore");
+  if (total === 0) { score.style.display="block"; score.style.color="#777"; score.textContent="Bitte zuerst Felder ausfüllen!"; return; }
+  const pct = Math.round(richtig/total*100);
+  score.style.display = "block";
+  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+  history.push({ zeit:now(), verb:"Relativpronomen", modus:"Relativpron.-Quiz", richtig, fehler, total });
+  renderStats();
+}
+
+function revealRelPron() {
+  document.querySelectorAll("#rpBody input[data-ans]").forEach(inp => {
+    if (!inp.classList.contains("correct")) {
+      inp.value = inp.dataset.ans;
+      inp.classList.add("revealed"); inp.classList.remove("wrong");
+    }
+  });
+}
+
+function resetRelPron() {
+  document.querySelectorAll("#rpBody input[data-ans]").forEach(inp => {
+    inp.value = ""; inp.classList.remove("correct","wrong","revealed");
+  });
+  document.getElementById("rpScore").style.display = "none";
+}
+
+// ════════════════════════════════════════════════════════════════
 // ESELSBRÜCKEN RENDERN
 // ════════════════════════════════════════════════════════════════
 function renderEselCards() {
@@ -892,7 +1040,6 @@ function checkEsel() {
     if (inp.classList.contains("revealed")) return;
     const val = inp.value.trim();
     if (!val) { inp.classList.remove("correct","wrong"); return; }
-    // allow with or without leading dash
     const normVal = (val.startsWith("-") ? val : "-" + val).toLowerCase().replace(/\s/g,"");
     const normAns = inp.dataset.ans.toLowerCase().replace(/\s/g,"");
     const ok = normVal === normAns;
@@ -909,7 +1056,7 @@ function checkEsel() {
   }
   const pct = Math.round(richtig / total * 100);
   score.style.display = "block";
-  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+  score.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
   history.push({ zeit: now(), verb:"Endungen", modus:"Eselsbrücken-Quiz", richtig, fehler, total });
   renderStats();
 }
@@ -941,6 +1088,7 @@ function togglePanel(name) {
   document.getElementById(id).classList.toggle("on", !hidden);
   if (name === "statistik" && !hidden) renderStats();
   if (name === "eselsbruecken" && !hidden) renderEselCards();
+  if (name === "relPronomen" && !hidden) renderRelPron();
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1041,7 +1189,7 @@ function checkAnswers() {
     const pct = Math.round(richtig/total*100);
     bar.style.background = pct===100?"#e8f5e9":pct>=60?"#fff8e1":"#ffebee";
     bar.style.color = "#333";
-    bar.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
+    bar.innerHTML = `Ergebnis: <strong>${richtig} richtig</strong> &nbsp;|&nbsp; <strong style="color:#c62828">${fehler} Fehler</strong> &nbsp;|&nbsp; ${pct} %`;
     const verbKey = document.getElementById("verbSelect").value || "–";
     history.push({ zeit:now(), verb:verbKey, modus:MODE_LABEL[mode]||mode, richtig, fehler, total });
     renderStats();
@@ -1078,7 +1226,7 @@ function renderStats() {
     : `<div class="stat-box total">  <div class="num">${totalA}</div><div class="lbl">Gesamt</div></div>
        <div class="stat-box richtig"><div class="num">${totalR}</div><div class="lbl">Richtig</div></div>
        <div class="stat-box fehler"> <div class="num">${totalF}</div><div class="lbl">Fehler</div></div>
-       <div class="stat-box pct">   <div class="num">${pct} %</div><div class="lbl">Quote</div></div>`;
+       <div class="stat-box pct">   <div class="num">${pct} %</div><div class="lbl">Quote</div></div>`;
 
   if (history.length === 0) {
     document.getElementById("historyTable").innerHTML = "";
@@ -1093,7 +1241,7 @@ function renderStats() {
       <td>${e.total}</td>
       <td class="hist-richtig">${e.richtig}</td>
       <td class="hist-fehler">${e.fehler}</td>
-      <td>${p} %</td>
+      <td>${p} %</td>
     </tr>`;
   }).join("");
   document.getElementById("historyTable").innerHTML = `
@@ -1118,6 +1266,12 @@ document.getElementById("adv-btn-quiz").addEventListener("click", () => setAdvMo
 document.getElementById("btnAdvCheck").addEventListener("click", checkAdv);
 document.getElementById("btnAdvReveal").addEventListener("click", revealAdv);
 document.getElementById("btnAdvReset").addEventListener("click", resetAdv);
+document.getElementById("btnRelPronomen").addEventListener("click", () => togglePanel("relPronomen"));
+document.getElementById("rp-btn-lernen").addEventListener("click", () => setRpMode("lernen"));
+document.getElementById("rp-btn-quiz").addEventListener("click", () => setRpMode("quiz"));
+document.getElementById("btnRpCheck").addEventListener("click", checkRelPron);
+document.getElementById("btnRpReveal").addEventListener("click", revealRelPron);
+document.getElementById("btnRpReset").addEventListener("click", resetRelPron);
 document.getElementById("dekl-btn-lernen").addEventListener("click", () => setDeklMode("lernen"));
 document.getElementById("dekl-btn-quiz").addEventListener("click", () => setDeklMode("quiz"));
 document.getElementById("btnDeklCheck").addEventListener("click", checkDekl);
